@@ -51,8 +51,7 @@ pipeline {
                      --scan /src \
                      --format HTML \
                      --out /report \
-                     --project Rapido-DevSecOps \
-                     --noupdate
+                     --project Rapido-DevSecOps 
               '''
              }
        }
