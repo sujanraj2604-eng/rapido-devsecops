@@ -42,19 +42,20 @@ pipeline {
         stage('OWASP Dependency Scan') {
             steps {
                 sh '''
-                mkdir -p reports
+                   mkdir -p reports
 
-                docker run --rm \
-                -v "$WORKSPACE:/src" \
-                -v "$WORKSPACE/reports:/report" \
-                owasp/dependency-check:latest \
-                --scan /src \
-                --format HTML \
-                --out /report \
-                --project Rapido-DevSecOps
-                '''
-            }
-        }
+                   docker run --rm \
+                     -v "$WORKSPACE:/src" \
+                     -v "$WORKSPACE/reports:/report" \
+                     owasp/dependency-check:latest \
+                     --scan /src \
+                     --format HTML \
+                     --out /report \
+                     --project Rapido-DevSecOps \
+                     --noupdate
+              '''
+             }
+       }
 
         stage('Docker Build') {
             steps {
@@ -104,7 +105,7 @@ pipeline {
                 }
             }
         }
-    }
+      }
 
     post {
         success {
@@ -120,4 +121,5 @@ pipeline {
         }
     }
 }
+
 
