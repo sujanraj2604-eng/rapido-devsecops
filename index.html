@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapido Ride Demo</title>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+body {
+    background: #f5f6f8;
+    color: #222;
+}
+header {
+    background: #ffcc00;
+    padding: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+}
+nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #222;
+    font-weight: bold;
+}
+.hero {
+    padding: 50px 20px;
+    text-align: center;
+    background: white;
+}
+.hero h1 {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+.hero p {
+    margin-bottom: 25px;
+}
+.booking {
+    max-width: 420px;
+    margin: 25px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px #ddd;
+}
+.booking input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.booking button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background: #ffcc00;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.result {
+    margin-top: 15px;
+    font-weight: bold;
+}
+footer {
+    text-align: center;
+    padding: 25px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">RAPIDO</div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Ride</a>
+        <a href="#">About</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Your ride, your way.</h1>
+    <p>Fast, convenient and affordable city rides.</p>
+</section>
+
+<div class="booking">
+    <h2>Book Your Ride</h2>
+
+    <input id="pickup" placeholder="Enter pickup location">
+    <input id="drop" placeholder="Enter drop location">
+
+    <button onclick="bookRide()">Find a Ride</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<footer>
+    DevSecOps Project - Jenkins, Docker, Terraform
+</footer>
+
+<script>
+function bookRide() {
+    const pickup = document.getElementById("pickup").value;
+    const drop = document.getElementById("drop").value;
+
+    if (!pickup || !drop) {
+        document.getElementById("result").innerText =
+            "Please enter pickup and drop locations.";
+        return;
+    }
+
+    document.getElementById("result").innerText =
+        "Ride request created: " + pickup + " to " + drop;
+}
+</script>
+
+</body>
+</html>
+
