@@ -1,3 +1,4 @@
+
 terraform {
   required_providers {
     docker = {
@@ -11,9 +12,14 @@ provider "docker" {
   host = "unix:///var/run/docker.sock"
 }
 
+resource "docker_image" "rapido" {
+  name         = "rapido-demo:latest"
+  keep_locally = true
+}
+
 resource "docker_container" "rapido_website" {
   name  = "rapido-website"
-  image = "rapido-demo:latest"
+  image = docker_image.rapido.image_id
 
   ports {
     internal = 80
@@ -22,3 +28,4 @@ resource "docker_container" "rapido_website" {
 
   restart = "unless-stopped"
 }
+
