@@ -7,7 +7,7 @@ pipeline {
     }
  
     tools {
-        nodejs 'node23'
+        nodejs 'NodeJS'
     }
  
     environment {
