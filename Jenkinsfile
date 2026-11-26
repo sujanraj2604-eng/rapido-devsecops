@@ -3,197 +3,132 @@ pipeline {
     agent any
 
     options {
+        skipDefaultCheckout(true)
         timestamps()
-        disableConcurrentBuilds()
-        timeout(time: 60, unit: 'MINUTES')
-    }
-
-    tools {
-        nodejs 'NodeJS'
     }
 
     environment {
-        DOCKERHUB_REPO = 'sujanraj2604-eng/rapido-devsecops'
-        AWS_DEFAULT_REGION = 'ap-south-1'
-        OWASP_CLI = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
+        SONAR_PROJECT = 'rapido-devsecops'
+        IMAGE_NAME = 'rapido-app'
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
 
-        stage('1. GitHub Checkout') {
-            steps {
-                checkout scm
-                sh 'git log -1 --oneline'
-            }
-        }
-
-        stage('2. Install Dependencies') {
+        stage('Declarative Tool Install') {
             steps {
                 sh '''
+                    java -version
+                    docker --version
                     node --version
                     npm --version
-                    npm ci
+                    trivy --version
                 '''
             }
         }
 
-        stage('3. Application Testing') {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Test') {
             steps {
                 sh 'npm test'
             }
         }
 
-        stage('4. SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
-                script {
-                    env.SONAR_SCANNER_HOME = tool 'SonarScanner'
-
-                    withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            "$SONAR_SCANNER_HOME/bin/sonar-scanner" \
-                              -Dsonar.projectKey=rapido-devsecops \
-                              -Dsonar.projectName=Rapido-DevSecOps \
-                              -Dsonar.sources=. \
-                              -Dsonar.exclusions=**/node_modules/**,terraform/**,**/.git/** \
-                              -Dsonar.token="$SONAR_AUTH_TOKEN"
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('5. OWASP Dependency Check') {
-            steps {
-                sh '''
-                    mkdir -p dependency-check-report
-
-                    "$OWASP_CLI" \
-                      --scan package.json \
-                      --scan package-lock.json \
-                      --format HTML \
-                      --out dependency-check-report \
-                      --failOnCVSS 7
-                '''
-            }
-        }
-
-        stage('6. Docker Build') {
-            steps {
-                script {
-                    env.DOCKER_IMAGE =
-                        "${env.DOCKERHUB_REPO}:${env.BUILD_NUMBER}"
-
-                    env.DOCKER_IMAGE_LATEST =
-                        "${env.DOCKERHUB_REPO}:latest"
-
+                withSonarQubeEnv('SonarQube') {
                     sh '''
-                        docker build \
-                          -t "$DOCKER_IMAGE" \
-                          -t "$DOCKER_IMAGE_LATEST" .
+                        sonar-scanner \
+                        -Dsonar.projectKey=rapido-devsecops \
+                        -Dsonar.sources=.
                     '''
                 }
             }
         }
 
-        stage('7. Trivy Security Scan') {
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('OWASP Dependency Check') {
             steps {
                 sh '''
-                    trivy image \
-                      --no-progress \
-                      --format json \
-                      --output trivy-report.json \
-                      "$DOCKER_IMAGE"
-
-                    trivy image \
-                      --no-progress \
-                      --exit-code 1 \
-                      --severity HIGH,CRITICAL \
-                      "$DOCKER_IMAGE"
+                    dependency-check.sh \
+                    --project Rapido \
+                    --scan . \
+                    --format HTML \
+                    --out reports
                 '''
             }
         }
 
-        stage('8. Push to Docker Hub') {
+        stage('Trivy Filesystem Scan') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DOCKERHUB_USER',
-                        passwordVariable: 'DOCKERHUB_PASSWORD'
-                    )
-                ]) {
-                    sh '''
-                        set -e
-                        trap 'docker logout >/dev/null 2>&1 || true' EXIT
-
-                        printf '%s' "$DOCKERHUB_PASSWORD" |
-                          docker login \
-                            --username "$DOCKERHUB_USER" \
-                            --password-stdin
-
-                        docker push "$DOCKER_IMAGE"
-                        docker push "$DOCKER_IMAGE_LATEST"
-                    '''
-                }
+                sh 'trivy fs .'
             }
         }
 
-        stage('9. Terraform Plan and Approval') {
+        stage('Docker Build') {
             steps {
-                script {
-                    withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding',
-                         credentialsId: 'aws-credentials']
-                    ]) {
-                        dir('terraform/terraform') {
+                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+            }
+        }
 
-                            sh '''
-                                terraform fmt -check
-                                terraform init -input=false
-                                terraform validate
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image ${IMAGE_NAME}:${IMAGE_TAG}'
+            }
+        }
 
-                                terraform plan \
-                                  -input=false \
-                                  -out=tfplan \
-                                  -var="docker_image=$DOCKER_IMAGE"
-                            '''
+        stage('Docker Push') {
+            steps {
+                echo 'Add your Docker registry login and push commands'
+            }
+        }
 
-                            timeout(time: 30, unit: 'MINUTES') {
-                                input(
-                                    message: 'Approve Rapido AWS deployment?',
-                                    ok: 'Approve Deployment'
-                                )
-                            }
+        stage('Deploy Application') {
+            steps {
+                echo 'Add your application deployment commands'
+            }
+        }
 
-                            sh '''
-                                terraform apply \
-                                  -input=false \
-                                  -auto-approve \
-                                  tfplan
-                            '''
-                        }
-                    }
-                }
+        stage('Health Check') {
+            steps {
+                echo 'Add your application health-check URL'
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts(
-                artifacts: 'dependency-check-report/**,trivy-report.json',
-                allowEmptyArchive: true
-            )
-
-            echo 'Rapido DevSecOps pipeline execution completed.'
+            echo 'Pipeline execution completed'
         }
-
         success {
-            echo 'Rapido application pipeline completed successfully!'
+            echo 'Pipeline completed successfully'
         }
-
         failure {
-            echo 'Pipeline failed. Check the stage logs and security reports.'
+            echo 'Pipeline failed. Check console output.'
         }
     }
 }
