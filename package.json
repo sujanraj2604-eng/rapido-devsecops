@@ -1,0 +1,10 @@
+{
+  "name": "rapido-clone",
+  "version": "1.0.0",
+  "description": "Rapido clone application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

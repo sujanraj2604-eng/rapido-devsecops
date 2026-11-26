@@ -1,0 +1,141 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #fff9e8;
+    color: #222;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%;
+    background: white;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: bold;
+    color: #222;
+}
+
+.logo span {
+    color: #ffc400;
+}
+
+nav a {
+    text-decoration: none;
+    color: #222;
+    margin-left: 25px;
+    font-weight: bold;
+}
+
+.hero {
+    min-height: 550px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 50px;
+    gap: 30px;
+    background: #fff1bd;
+}
+
+.hero-text h1 {
+    font-size: 55px;
+    line-height: 1.2;
+}
+
+.hero-text span {
+    color: #e5a900;
+}
+
+.hero-text p {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.booking-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.booking-card h2 {
+    margin-bottom: 20px;
+}
+
+.booking-card label {
+    display: block;
+    margin: 12px 0 5px;
+}
+
+.booking-card input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.booking-card button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 20px;
+    background: #ffc400;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#result {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px 20px;
+    gap: 20px;
+}
+
+.feature {
+    background: #fff;
+    padding: 25px;
+    text-align: center;
+    border-radius: 10px;
+    flex: 1;
+}
+
+footer {
+    background: #222;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        padding: 30px 15px;
+    }
+
+    .hero-text h1 {
+        font-size: 38px;
+    }
+
+    .booking-card {
+        width: 100%;
+    }
+
+    .features {
+        flex-direction: column;
+    }
+}

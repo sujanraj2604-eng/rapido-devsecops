@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapido - Bike Taxi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">rapido<span>.</span></div>
+    <nav>
+        <a href="#ride">Book a Ride</a>
+        <a href="#about">About</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+        <h1>Your city.<br>Your ride.<br><span>Your Rapido.</span></h1>
+        <p>Affordable, quick and convenient bike rides.</p>
+    </div>
+
+    <div class="booking-card" id="ride">
+        <h2>Book your ride</h2>
+
+        <label for="pickup">Pickup Location</label>
+        <input id="pickup" placeholder="Enter pickup location">
+
+        <label for="drop">Drop Location</label>
+        <input id="drop" placeholder="Enter destination">
+
+        <button id="bookBtn">Get Fare Estimate</button>
+
+        <div id="result"></div>
+    </div>
+</section>
+
+<section class="features" id="about">
+    <div class="feature">
+        <h2>Quick</h2>
+        <p>Convenient city travel.</p>
+    </div>
+
+    <div class="feature">
+        <h2>Affordable</h2>
+        <p>Simple demo fare estimates.</p>
+    </div>
+
+    <div class="feature">
+        <h2>Easy</h2>
+        <p>Book with a few simple steps.</p>
+    </div>
+</section>
+
+<footer>
+    <p>Rapido Demo Application | DevSecOps Project</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
