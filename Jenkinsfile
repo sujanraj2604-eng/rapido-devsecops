@@ -77,20 +77,18 @@ pipeline {
         }
  
         stage('OWASP Dependency Check') {
-            steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
-                    sh '''
-                        "$DC_HOME/bin/dependency-check.sh" \
-                          --project Rapido \
-                          --scan . \
-                          --exclude "**/node_modules/**" \
-                          --format HTML \
-                          --out reports \
-                          --nvdApiKey "$NVD_KEY" || true
-                    '''
-                }
-            }
-        }
+    steps {
+        sh '''
+            mkdir -p dependency-check-report
+
+            /opt/dependency-check/dependency-check/bin/dependency-check.sh \
+              --scan . \
+              --exclude "**/node_modules/**" \
+              --format HTML \
+              --out dependency-check-report
+        '''
+    }
+}
  
         stage('Trivy Filesystem Scan') {
             steps {
