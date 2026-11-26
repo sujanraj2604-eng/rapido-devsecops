@@ -2,3 +2,11 @@
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfstate.lock.info
+
+node_modules/
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+dependency-check-report/
+trivy-report.json
